@@ -123,7 +123,8 @@ module.exports = async function handler(req, res) {
   `;
 
   try {
-    const response = await fetch('https://api.resend.com/emails', {
+    // ---- Send email notification ----
+    const emailRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
@@ -132,16 +133,51 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify({
         from: 'CDA Dock Pro <leads@cdadockpro.com>',
         to:   [NOTIFY_EMAIL],
-        reply_to: email, // hitting Reply goes straight to the lead
+        reply_to: email,
         subject: `New Quote Request — ${name} · ${lakeLabel} · ${estimate || 'no estimate'}`,
         html,
       }),
     });
 
-    if (!response.ok) {
-      const err = await response.text();
+    if (!emailRes.ok) {
+      const err = await emailRes.text();
       console.error('Resend error:', err);
       return res.status(500).json({ error: 'Failed to send email.' });
+    }
+
+    // ---- Save to Airtable ----
+    if (process.env.AIRTABLE_API_KEY && process.env.AIRTABLE_BASE_ID) {
+      const airtableRes = await fetch(
+        `https://api.airtable.com/v0/${process.env.AIRTABLE_BASE_ID}/Leads`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            fields: {
+              'Name':           name,
+              'Email':          email,
+              'Phone':          phone          || '',
+              'Lake':           lakeLabel,
+              'Estimate':       estimate       || '',
+              'Sqft':           sqft ? Number(sqft) : null,
+              'Material':       materialLabel,
+              'Add-ons':        addins         || 'None',
+              'Preferred Date': preferred_date || '',
+              'Other Services': other_services || '',
+              'Source':         'Quote Request',
+              'Submitted At':   new Date().toISOString().split('T')[0],
+            },
+          }),
+        }
+      );
+
+      if (!airtableRes.ok) {
+        // Log but don't fail the request — email already sent
+        console.error('Airtable error:', await airtableRes.text());
+      }
     }
 
     return res.status(200).json({ success: true });
