@@ -21,7 +21,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, phone, lake, message } = req.body;
+  const { name, email, phone, lake, message, preferred_date, other_services } = req.body;
 
   if (!name || !email) {
     return res.status(400).json({ error: 'Name and email are required.' });
@@ -56,8 +56,18 @@ module.exports = async function handler(req, res) {
             <td style="padding: 6px 0; color: #718096;">Lake</td>
             <td style="padding: 6px 0; color: #0A1628; font-weight: 600;">${lakeLabel}</td>
           </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #718096;">Preferred Date</td>
+            <td style="padding: 6px 0; color: #0A1628;">${preferred_date || '—'}</td>
+          </tr>
         </table>
       </div>
+
+      ${other_services ? `
+      <div style="padding: 24px 32px 0;">
+        <h2 style="margin: 0 0 12px; font-size: 15px; color: #0A1628; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Other Services Requested</h2>
+        <p style="margin: 0; color: #4A5568; font-size: 15px; line-height: 1.6; white-space: pre-line;">${other_services}</p>
+      </div>` : ''}
 
       ${message ? `
       <div style="padding: 24px 32px 0;">
