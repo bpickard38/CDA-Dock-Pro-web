@@ -348,33 +348,37 @@ function buildAddinsString(estimate) {
   });
 
   // Form submission
-  mForm?.addEventListener('submit', function (e) {
+  mForm?.addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    const submitBtn = mForm.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Sending…';
+    submitBtn.disabled = true;
 
     const formData = Object.fromEntries(new FormData(mForm));
 
-    // ---- Lead data logged to console ----
-    // TODO: replace console.log with a real API call when backend is ready
-    console.log('CDA Dock Pro — Lead Submission:', formData);
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    /*
-    // ---- UNCOMMENT to wire up a real backend ----
-    fetch('/api/leads', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then(res => res.json())
-      .then(data => console.log('Lead saved:', data))
-      .catch(err => console.error('Lead submission error:', err));
-    */
+      if (!res.ok) throw new Error('Server error');
 
-    // Show success message
-    mForm.hidden    = true;
-    success.hidden  = false;
+      // Show success message
+      mForm.hidden   = true;
+      success.hidden = false;
 
-    // Auto-close after 4 seconds
-    setTimeout(() => modal.close(), 4000);
+      // Auto-close after 4 seconds
+      setTimeout(() => modal.close(), 4000);
+
+    } catch (err) {
+      console.error('Lead submission error:', err);
+      submitBtn.textContent = 'Error — please try again';
+      submitBtn.disabled = false;
+      submitBtn.style.backgroundColor = '#E53E3E';
+    }
   });
 
 })();
@@ -388,35 +392,34 @@ function buildAddinsString(estimate) {
   const form = document.getElementById('contact-form');
   if (!form) return;
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
+
+    const btn = form.querySelector('button[type="submit"]');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
 
     const formData = Object.fromEntries(new FormData(form));
 
-    // Log to console — replace with fetch('/api/contact', ...) when backend ready
-    console.log('CDA Dock Pro — Contact Form:', formData);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
 
-    /*
-    // ---- UNCOMMENT to wire up a real backend ----
-    fetch('/api/contact', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData),
-    })
-      .then(res => res.json())
-      .then(() => showContactSuccess())
-      .catch(err => console.error('Contact form error:', err));
-    */
+      if (!res.ok) throw new Error('Server error');
 
-    // Simple inline success feedback
-    const btn = form.querySelector('button[type="submit"]');
-    if (btn) {
       btn.textContent = 'Message Sent! ✓';
-      btn.disabled = true;
       btn.style.backgroundColor = '#38A169';
-    }
+      form.reset();
 
-    form.reset();
+    } catch (err) {
+      console.error('Contact form error:', err);
+      btn.textContent = 'Error — please try again';
+      btn.disabled = false;
+      btn.style.backgroundColor = '#E53E3E';
+    }
   });
 
 })();
