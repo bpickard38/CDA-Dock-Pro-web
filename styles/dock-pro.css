@@ -739,8 +739,12 @@ h1, h2, h3, h4 {
   border-bottom: 1px solid #E2E8F0;
   font-size: 0.95rem;
   color: var(--slate);
-  position: relative;
   transition: color var(--transition);
+}
+
+.checkbox-text {
+  flex: 1;
+  line-height: 1.4;
 }
 
 .checkbox-label:last-child { border-bottom: none; }
@@ -782,36 +786,13 @@ h1, h2, h3, h4 {
   outline-offset: 2px;
 }
 
-/* Disabled state — used for sealant when non-wood material selected */
-.checkbox-input:disabled + .checkbox-custom {
-  background-color: #EDF2F7;
-  border-color: #E2E8F0;
-  cursor: not-allowed;
-}
-
-.checkbox-label.is-disabled {
-  color: #A0AEC0;
-  cursor: not-allowed;
-}
-
 .addon-price {
-  margin-left: auto;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--accent);
   white-space: nowrap;
 }
 
-/* Sealant availability note */
-.sealant-note {
-  display: none; /* shown by JS when relevant */
-  font-size: 0.75rem;
-  color: var(--slate-light);
-  font-style: italic;
-  margin-left: var(--space-2);
-}
-
-.sealant-note.is-visible { display: inline; }
 
 /* ---- Calculator result panel ---- */
 .calc-result {

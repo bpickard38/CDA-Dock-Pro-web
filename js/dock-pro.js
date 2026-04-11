@@ -25,9 +25,6 @@ const PRICING_CONFIG = {
   ADDON_PEST:      50,   // Spider web & pest removal
   ADDON_FURNITURE: 75,   // Dock furniture cleaning
 
-  /** Sealant: price per sqft, ONLY applied for Natural Wood (Option A) */
-  SEALANT_PER_SQFT: 0.50,
-
   /** Output range: ±10% around the base estimate */
   RANGE_FACTOR: 0.10,
 
@@ -83,9 +80,6 @@ function formatDollars(amount) {
   const sqftInput    = document.getElementById('sqft');
   const materialSel  = document.getElementById('material');
   const lakeSel      = document.getElementById('lake');
-  const sealantCb    = document.getElementById('addon-sealant');
-  const sealantLabel = document.getElementById('sealant-label');
-  const sealantNote  = document.getElementById('sealant-note');
   const resultPanel  = document.getElementById('calc-result');
   const resultRange  = document.getElementById('result-range');
   const openModalBtn = document.getElementById('open-modal-btn');
@@ -104,10 +98,9 @@ function formatDollars(amount) {
    * @param {string}  params.material  — 'wood' | 'composite' | 'concrete'
    * @param {boolean} params.pest
    * @param {boolean} params.furniture
-   * @param {boolean} params.sealant
    * @returns {{ low: number, high: number, base: number }}
    */
-  function calculateEstimate({ sqft, material, pest, furniture, sealant }) {
+  function calculateEstimate({ sqft, material, pest, furniture }) {
     const rate = PRICING_CONFIG.BASE_RATES[material] ?? PRICING_CONFIG.BASE_RATES.wood;
 
     let base = sqft * rate;
@@ -116,10 +109,6 @@ function formatDollars(amount) {
     if (pest)      base += PRICING_CONFIG.ADDON_PEST;
     if (furniture) base += PRICING_CONFIG.ADDON_FURNITURE;
 
-    // Sealant — Option A: only for Natural Wood
-    if (sealant && material === 'wood') {
-      base += sqft * PRICING_CONFIG.SEALANT_PER_SQFT;
-    }
 
     // Apply minimum price floor
     base = Math.max(base, PRICING_CONFIG.MINIMUM_PRICE);
@@ -132,21 +121,6 @@ function formatDollars(amount) {
     const safeHigh = Math.max(high, PRICING_CONFIG.MINIMUM_PRICE);
 
     return { low: safeLow, high: safeHigh, base: roundTo(base, PRICING_CONFIG.ROUND_TO) };
-  }
-
-  /**
-   * Enable or disable the sealant checkbox based on selected material.
-   * Only Natural Wood (value="wood") supports sealant — Option A.
-   */
-  function updateSealantAvailability() {
-    const isWood = materialSel.value === 'wood';
-
-    sealantCb.disabled = !isWood;
-    sealantLabel.classList.toggle('is-disabled', !isWood);
-    sealantNote.classList.toggle('is-visible', !isWood && materialSel.value !== '');
-
-    // Uncheck sealant if material changes away from wood
-    if (!isWood) sealantCb.checked = false;
   }
 
   /** Validate sqft input; return error message or empty string */
@@ -171,9 +145,6 @@ function formatDollars(amount) {
 
   // ---- Event listeners ----
 
-  // Update sealant state whenever material changes
-  materialSel.addEventListener('change', updateSealantAvailability);
-
   // Form submission → calculate and show results
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -187,7 +158,6 @@ function formatDollars(amount) {
       material:  materialSel.value || 'wood',
       pest:      document.getElementById('addon-pest').checked,
       furniture: document.getElementById('addon-furniture').checked,
-      sealant:   sealantCb.checked,
     };
 
     const estimate = calculateEstimate(params);
@@ -326,7 +296,6 @@ function buildAddinsString(estimate) {
   const parts = [];
   if (estimate.pest)      parts.push('Pest Removal');
   if (estimate.furniture) parts.push('Furniture Cleaning');
-  if (estimate.sealant)   parts.push('Sealant');
   return parts.join(', ') || 'None';
 }
 
