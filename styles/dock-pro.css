@@ -459,7 +459,7 @@ h1, h2, h3, h4 {
 }
 
 @media (min-width: 768px) {
-  .cards-grid { grid-template-columns: repeat(3, 1fr); }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .service-card {
@@ -483,18 +483,15 @@ h1, h2, h3, h4 {
 }
 
 .card-image--wash {
-  /* Pressure wash: blue-grey turbulent water feel */
-  background: linear-gradient(135deg, #2c5282 0%, #2b6cb0 50%, #4299e1 100%);
-}
-
-.card-image--restore {
-  /* Restoration: warm wood tones */
-  background: linear-gradient(135deg, #744210 0%, #975a16 50%, #c05621 100%);
+  background-image: url('../images/pressure.png');
+  background-size: cover;
+  background-position: center;
 }
 
 .card-image--maintain {
-  /* Maintenance: forest/seasonal greens */
-  background: linear-gradient(135deg, #1a365d 0%, #2a4365 50%, #2c7a7b 100%);
+  background-image: url('../images/clean dock.png');
+  background-size: cover;
+  background-position: center;
 }
 
 .card-body {
