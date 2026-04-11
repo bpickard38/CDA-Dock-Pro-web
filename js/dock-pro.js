@@ -16,9 +16,9 @@ const PRICING_CONFIG = {
 
   /** Base rate per square foot by material */
   BASE_RATES: {
-    wood:      1.65,   // Natural Wood (Cedar, Redwood, Pressure Treated)
-    composite: 1.15,   // Composite / Trex
-    concrete:  0.85,   // Concrete / Stone
+    wood:      0.45,   // Natural Wood (Cedar, Redwood, Pressure Treated)
+    composite: 0.35,   // Composite / Trex
+    concrete:  0.22,   // Concrete / Stone
   },
 
   /** Flat-fee add-ons */
