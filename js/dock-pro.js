@@ -379,7 +379,7 @@ function buildAddinsString(estimate) {
 
       if (!res.ok) throw new Error('Server error');
 
-      btn.textContent = 'Message Sent! ✓';
+      btn.textContent = 'Message Sent';
       btn.style.backgroundColor = '#38A169';
       form.reset();
 
