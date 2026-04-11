@@ -373,8 +373,7 @@ h1, h2, h3, h4 {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  /* Lakeside gradient placeholder — replace with: background-image: url(images/hero.jpg) */
-  background: linear-gradient(135deg, #0A1628 0%, #162340 40%, #1a3a5c 70%, #1e4976 100%);
+  background-image: url('../images/hero dock.png');
   background-size: cover;
   background-position: center;
 }
@@ -555,16 +554,18 @@ h1, h2, h3, h4 {
   background-position: center;
 }
 
-/* BEFORE — grimy dock feel (muted browns/greens) */
-/* Replace with: background-image: url(images/before.jpg) */
+/* BEFORE panel */
 .slider-panel--before {
-  background: linear-gradient(135deg, #2d3748 0%, #4a5568 40%, #5a6a4a 100%);
+  background-image: url('../images/before.png');
+  background-size: cover;
+  background-position: center;
 }
 
-/* AFTER — clean, bright, fresh */
-/* Replace with: background-image: url(images/after.jpg) */
+/* AFTER panel */
 .slider-panel--after {
-  background: linear-gradient(135deg, #744210 0%, #a0522d 40%, #d4956a 100%);
+  background-image: url('../images/after.png');
+  background-size: cover;
+  background-position: center;
   /* Clip reveals from the left — value updated live by JS */
   clip-path: inset(0 50% 0 0);
   will-change: clip-path;
