@@ -84,7 +84,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'CDA Dock Pro <onboarding@resend.dev>',
+        from: 'CDA Dock Pro <leads@cdadockpro.com>',
         to:   [NOTIFY_EMAIL],
         reply_to: email,
         subject: `New Message — ${name} · ${lakeLabel}`,

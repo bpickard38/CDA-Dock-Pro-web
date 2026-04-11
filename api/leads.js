@@ -119,10 +119,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        // Free tier sends from onboarding@resend.dev to your own verified email.
-        // Once you verify cdadockpro.com in Resend, change this to:
-        //   from: 'leads@cdadockpro.com'
-        from: 'CDA Dock Pro <onboarding@resend.dev>',
+        from: 'CDA Dock Pro <leads@cdadockpro.com>',
         to:   [NOTIFY_EMAIL],
         reply_to: email, // hitting Reply goes straight to the lead
         subject: `New Quote Request — ${name} · ${lakeLabel} · ${estimate || 'no estimate'}`,
