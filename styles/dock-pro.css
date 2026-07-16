@@ -996,11 +996,16 @@ h1, h2, h3, h4 {
 
 /* native <dialog> reset */
 dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   padding: 0;
   border: none;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   max-width: min(520px, calc(100vw - 2rem));
+  max-height: 90vh;
+  overflow-y: auto;
   width: 100%;
   background-color: var(--white);
   color: var(--slate);
@@ -1023,8 +1028,30 @@ dialog[open] {
 }
 
 .lead-modal {
-  position: relative;
   padding: var(--space-8) var(--space-6) var(--space-6);
+}
+
+/* Mobile responsive styles for the lead modal (bottom-sheet layout) */
+@keyframes modalSlideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+@media (max-width: 767px) {
+  dialog.lead-modal {
+    top: auto;
+    bottom: 0;
+    margin: auto auto 0 auto;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-width: 100%;
+    width: 100%;
+    max-height: 92vh;
+    padding: var(--space-6) var(--space-4) var(--space-4);
+  }
+
+  dialog.lead-modal[open] {
+    animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
 
 .modal-close svg { width: 16px; height: 16px; }
