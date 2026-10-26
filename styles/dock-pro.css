@@ -115,6 +115,14 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   border: 0;
 }
 
+/* Spam honeypot — moved off-screen so only bots fill it in */
+.form-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px; height: 1px;
+  overflow: hidden;
+}
+
 
 /* ----------------------------------------------------------------
    3. LAYOUT UTILITIES
@@ -373,7 +381,7 @@ h1, h2, h3, h4 {
   min-height: 100vh;
   display: flex;
   align-items: center;
-  background-image: url('../images/hero dock.png');
+  background-image: url('../images/hero-dock.webp');
   background-size: cover;
   background-position: center;
 }
@@ -475,7 +483,7 @@ h1, h2, h3, h4 {
   box-shadow: var(--shadow-lg);
 }
 
-/* Card image placeholders — replace background with url() when photos available */
+/* Service card photos */
 .card-image {
   height: 200px;
   background-size: cover;
@@ -483,13 +491,13 @@ h1, h2, h3, h4 {
 }
 
 .card-image--wash {
-  background-image: url('../images/pressure.png');
+  background-image: url('../images/pressure.webp');
   background-size: cover;
   background-position: center;
 }
 
 .card-image--maintain {
-  background-image: url('../images/clean dock.png');
+  background-image: url('../images/clean-dock.webp');
   background-size: cover;
   background-position: center;
 }
@@ -553,14 +561,14 @@ h1, h2, h3, h4 {
 
 /* BEFORE panel */
 .slider-panel--before {
-  background-image: url('../images/before.png');
+  background-image: url('../images/before.webp');
   background-size: cover;
   background-position: center;
 }
 
 /* AFTER panel */
 .slider-panel--after {
-  background-image: url('../images/after.png');
+  background-image: url('../images/after.webp');
   background-size: cover;
   background-position: center;
   /* Clip reveals from the left — value updated live by JS */

@@ -24,23 +24,35 @@ const LAKE_LABELS = {
   other:   'Other / Not Sure',
 };
 
+const { escapeHtml, validateSubmission, isSpam } = require('./_utils');
+
 module.exports = async function handler(req, res) {
   // Only accept POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, phone, lake, sqft, material, addins, estimate, preferred_date, other_services } = req.body;
-
-  // Basic validation — name and email are required
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Name and email are required.' });
+  // Bots fill the hidden honeypot field — pretend success so they move on
+  if (isSpam(req.body)) {
+    return res.status(200).json({ success: true });
   }
+
+  const validationError = validateSubmission(req.body);
+  if (validationError) {
+    return res.status(400).json({ error: validationError });
+  }
+
+  const { name, email, phone, lake, sqft, material, addins, estimate, preferred_date, other_services } = req.body;
 
   const materialLabel = MATERIAL_LABELS[material] || material || '—';
   const lakeLabel     = LAKE_LABELS[lake]         || lake     || '—';
 
   // Build the HTML email body
+  // Escaped copies of every value that goes into the email HTML
+  const h = Object.fromEntries(
+    Object.entries({ estimate, name, email, phone, lakeLabel, sqft, materialLabel, addins, preferred_date, other_services }).map(([k, v]) => [k, v == null || v === '' ? v : escapeHtml(v)])
+  );
+
   const html = `
     <div style="font-family: -apple-system, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8fafc; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
 
@@ -53,7 +65,7 @@ module.exports = async function handler(req, res) {
       <!-- Estimate highlight -->
       <div style="background: #2B6CB0; padding: 16px 32px; text-align: center;">
         <p style="margin: 0; color: rgba(255,255,255,0.8); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;">Estimated Investment</p>
-        <p style="margin: 4px 0 0; color: #ffffff; font-size: 28px; font-weight: 700;">${estimate || '—'}</p>
+        <p style="margin: 4px 0 0; color: #ffffff; font-size: 28px; font-weight: 700;">${h.estimate || '—'}</p>
       </div>
 
       <!-- Contact info -->
@@ -62,19 +74,19 @@ module.exports = async function handler(req, res) {
         <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
           <tr>
             <td style="padding: 6px 0; color: #718096; width: 130px;">Name</td>
-            <td style="padding: 6px 0; color: #0A1628; font-weight: 600;">${name}</td>
+            <td style="padding: 6px 0; color: #0A1628; font-weight: 600;">${h.name}</td>
           </tr>
           <tr>
             <td style="padding: 6px 0; color: #718096;">Email</td>
-            <td style="padding: 6px 0;"><a href="mailto:${email}" style="color: #2B6CB0;">${email}</a></td>
+            <td style="padding: 6px 0;"><a href="mailto:${h.email}" style="color: #2B6CB0;">${h.email}</a></td>
           </tr>
           <tr>
             <td style="padding: 6px 0; color: #718096;">Phone</td>
-            <td style="padding: 6px 0; color: #0A1628;">${phone ? `<a href="tel:${phone}" style="color: #2B6CB0;">${phone}</a>` : '—'}</td>
+            <td style="padding: 6px 0; color: #0A1628;">${h.phone ? `<a href="tel:${phone.replace(/[^\d+]/g, '')}" style="color: #2B6CB0;">${h.phone}</a>` : '—'}</td>
           </tr>
           <tr>
             <td style="padding: 6px 0; color: #718096;">Lake</td>
-            <td style="padding: 6px 0; color: #0A1628; font-weight: 600;">${lakeLabel}</td>
+            <td style="padding: 6px 0; color: #0A1628; font-weight: 600;">${h.lakeLabel}</td>
           </tr>
         </table>
       </div>
@@ -85,33 +97,33 @@ module.exports = async function handler(req, res) {
         <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
           <tr>
             <td style="padding: 6px 0; color: #718096; width: 130px;">Square Footage</td>
-            <td style="padding: 6px 0; color: #0A1628; font-weight: 600;">${sqft ? sqft + ' sqft' : '—'}</td>
+            <td style="padding: 6px 0; color: #0A1628; font-weight: 600;">${h.sqft ? h.sqft + ' sqft' : '—'}</td>
           </tr>
           <tr>
             <td style="padding: 6px 0; color: #718096;">Material</td>
-            <td style="padding: 6px 0; color: #0A1628;">${materialLabel}</td>
+            <td style="padding: 6px 0; color: #0A1628;">${h.materialLabel}</td>
           </tr>
           <tr>
             <td style="padding: 6px 0; color: #718096;">Add-Ons</td>
-            <td style="padding: 6px 0; color: #0A1628;">${addins || 'None'}</td>
+            <td style="padding: 6px 0; color: #0A1628;">${h.addins || 'None'}</td>
           </tr>
           <tr>
             <td style="padding: 6px 0; color: #718096;">Preferred Date</td>
-            <td style="padding: 6px 0; color: #0A1628;">${preferred_date || '—'}</td>
+            <td style="padding: 6px 0; color: #0A1628;">${h.preferred_date || '—'}</td>
           </tr>
         </table>
       </div>
 
-      ${other_services ? `
+      ${h.other_services ? `
       <!-- Other services -->
       <div style="padding: 24px 32px 0;">
         <h2 style="margin: 0 0 12px; font-size: 15px; color: #0A1628; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">Other Services Requested</h2>
-        <p style="margin: 0; color: #4A5568; font-size: 15px; line-height: 1.6; white-space: pre-line;">${other_services}</p>
+        <p style="margin: 0; color: #4A5568; font-size: 15px; line-height: 1.6; white-space: pre-line;">${h.other_services}</p>
       </div>` : ''}
 
       <!-- CTA footer -->
       <div style="padding: 24px 32px 32px; margin-top: 8px;">
-        <a href="mailto:${email}?subject=Your CDA Dock Pro Quote&body=Hi ${name}," style="display: inline-block; background: #2B6CB0; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px;">Reply to ${name} →</a>
+        <a href="mailto:${encodeURIComponent(email)}?subject=Your CDA Dock Pro Quote&body=Hi ${encodeURIComponent(name)}," style="display: inline-block; background: #2B6CB0; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 15px;">Reply to ${h.name} →</a>
       </div>
 
       <!-- Footer -->
