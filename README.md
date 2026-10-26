@@ -2,11 +2,11 @@
 
 **Live site: [cdadockpro.com](https://www.cdadockpro.com)**
 
-A lead-generation website for CDA Dock Pro LLC, a dock pressure-washing and maintenance business serving lakefront properties around Coeur d'Alene, Idaho. Homeowners get an instant price estimate, request a formal quote, and every lead lands in the owner's inbox and a CRM table automatically.
+I started CDA Dock Pro, a dock pressure-washing business serving lakefront homes around Coeur d'Alene, Idaho, and built this website so customers could find the business, see what a cleaning would cost, and get in touch. Homeowners get an instant price estimate and can request a formal quote, and every lead lands in my inbox and an Airtable CRM automatically.
 
 ![CDA Dock Pro homepage](docs/screenshots/hero.jpg)
 
-> **Note:** the forms on the live site are connected to the real business. Feel free to try the estimate calculator, but please don't submit test quote requests.
+> **Note:** the forms on the live site are connected to my real business. Feel free to try the estimate calculator, but please don't submit test quote requests.
 
 ## Features
 
@@ -88,7 +88,7 @@ The static site alone can be previewed with any file server (for example `python
 
 ## What I learned
 
-- **Designing for a real client.** Pricing, service areas and copy came from the business's actual needs, not a tutorial spec, and the estimate ranges were tuned to local market rates.
-- **Treating user input as untrusted.** The first version put form values straight into the email HTML. Adding escaping, validation and a honeypot showed me how a public form can be abused even on a small site.
-- **Performance is mostly assets.** The original photos were about 33 MB. Resizing them and converting to WebP cut that by about 98%, a bigger win than any code change.
-- **Failing gracefully across services.** The pipeline is ordered so that a failure in a secondary service (Airtable) never costs the business a lead.
+- **Building for my own business.** I was both the developer and the customer. The pricing, service areas and copy came from actually running the business, and I tuned the estimate ranges to what dock cleaning costs on the local lakes, so the calculator gives customers numbers I'd really quote.
+- **Treating user input as untrusted.** My first version put form values straight into the email HTML. Adding escaping, validation and a honeypot showed me how a public form can be abused, even on a small site.
+- **Performance is mostly assets.** My original photos were about 33 MB. Resizing them and converting to WebP cut that by about 98%, a bigger win than any code change.
+- **Never losing a lead.** The lead email is sent before the Airtable save, so if Airtable goes down I still hear about every customer who reached out.
